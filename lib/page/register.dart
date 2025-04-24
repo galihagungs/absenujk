@@ -96,6 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ScaffoldMessenger.of(
                           context,
                         ).showSnackBar(SnackBar(content: Text(state.message)));
+                        Navigator.pop(context);
                       } else if (state is ButtonregisterError) {
                         ScaffoldMessenger.of(
                           context,

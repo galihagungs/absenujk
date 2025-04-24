@@ -106,10 +106,10 @@ class _LoginPageState extends State<LoginPage> {
                       context,
                       MaterialPageRoute(builder: (context) => Homepage()),
                     );
-                  } else if (state is ButtonloginError) {
+                  } else if (state is ButtonloginFailed) {
                     ScaffoldMessenger.of(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(state.error)));
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
                 builder: (context, state) {

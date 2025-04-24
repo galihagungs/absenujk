@@ -16,9 +16,13 @@ class ButtonloginBloc extends Bloc<ButtonloginEvent, ButtonloginState> {
             email: event.email,
             password: event.password,
           );
-          emit(ButtonloginSuccess(message));
+          if (message == "Login Berhasil") {
+            emit(ButtonloginSuccess(message));
+          } else {
+            emit(ButtonloginFailed("Username atau password salah"));
+          }
         } catch (e) {
-          emit(ButtonloginError(e.toString()));
+          emit(ButtonloginFailed("Username atau password salah"));
         }
       }
     });

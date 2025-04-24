@@ -37,7 +37,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             currentLat = position.latitude;
             currentLong = position.longitude;
           }
-          UserModel user = await dbhelper.getUser(id: event.id);
+          UserModel user = await dbhelper.getUser();
           emit(
             DashboardLoaded(
               user: user,
@@ -48,6 +48,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             ),
           );
         } on Exception catch (e) {
+          emit(DashboardFailed());
           showToast(e.toString(), success: false);
         }
       }

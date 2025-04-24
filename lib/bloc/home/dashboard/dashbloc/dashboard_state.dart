@@ -7,6 +7,8 @@ final class DashboardInitial extends DashboardState {}
 
 final class DashboardLoading extends DashboardState {}
 
+final class DashboardFailed extends DashboardState {}
+
 final class DashboardLoaded extends DashboardState {
   final UserModel user;
   final String currentAddress;

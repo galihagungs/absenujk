@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceHandler {
   static const String idUser = "";
+  static const bool isDarkmode = false;
 
   static void saveId(String userId) {
     SharedPreferences.getInstance().then((prefs) {
@@ -21,5 +22,18 @@ class PreferenceHandler {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear();
     });
+  }
+
+  static void saveTheme(bool isdarkmode) {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool('isDarkmode', isdarkmode);
+    });
+  }
+
+  //For getting user id
+  static Future loadTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isDark = prefs.getBool('isDarkmode') ?? false;
+    return isDark;
   }
 }

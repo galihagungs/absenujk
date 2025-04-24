@@ -1,16 +1,19 @@
+import 'dart:ffi';
+
+import 'package:absenpraujk/model/AbsenModel.dart';
 import 'package:absenpraujk/model/UserModel.dart';
 import 'package:absenpraujk/service/pref_handler.dart';
 import 'package:absenpraujk/service/query/AbsenQuery.dart';
 import 'package:absenpraujk/service/query/UserQuery.dart';
 import 'package:absenpraujk/utils/toast.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Dbhelper {
   List<String> dataQuery = [
     'CREATE TABLE IF NOT EXISTS ${UserQuery.tableName}(${UserQuery.id} ${UserQuery.idType}, ${UserQuery.name} ${UserQuery.textType}, ${UserQuery.email} ${UserQuery.textType}, ${UserQuery.password} ${UserQuery.textType})',
-    'CREATE TABLE IF NOT EXISTS ${Absenquery.tableName}(${Absenquery.id} ${Absenquery.idType}, ${Absenquery.userid} ${Absenquery.intType}, ${Absenquery.masukLat} ${Absenquery.realType}, ${Absenquery.masukLong} ${Absenquery.realType}, ${Absenquery.masukAddress} ${Absenquery.textType}, ${Absenquery.masukDate} ${Absenquery.dateType}, ${Absenquery.masukDateTime} ${Absenquery.datetimeType}, ${Absenquery.pulangLat} ${Absenquery.realType}, ${Absenquery.pulangLong} ${Absenquery.realType}, ${Absenquery.pulangAddress} ${Absenquery.textType}, ${Absenquery.pulangDate} ${Absenquery.dateType}, ${Absenquery.pulangDateTime} ${Absenquery.datetimeType})',
-    //'CREATE TABLE IF NOT EXISTS ${Absenquery.tableName}(${Absenquery.id} ${Absenquery.idType}, FOREIGN KEY (${Absenquery.userid}) REFERENCES ${UserQuery.tableName} (${UserQuery.id}) ON CASCADE, ${Absenquery.masukLat} ${Absenquery.doubleType}, ${Absenquery.masukLong} ${Absenquery.doubleType}, ${Absenquery.masukAddress} ${Absenquery.textType}, ${Absenquery.masukDate} ${Absenquery.dateType}, ${Absenquery.masukDateTime} ${Absenquery.datetimeType}, ${Absenquery.pulangLat} ${Absenquery.doubleType}, ${Absenquery.pulangLong} ${Absenquery.doubleType}, ${Absenquery.pulangAddress} ${Absenquery.textType}, ${Absenquery.pulangDate} ${Absenquery.dateType}, ${Absenquery.pulangDateTime} ${Absenquery.datetimeType})',
+    'CREATE TABLE IF NOT EXISTS ${Absenquery.tableName}(${Absenquery.id} ${Absenquery.idType}, ${Absenquery.userid} ${Absenquery.intType}, ${Absenquery.masukLat} ${Absenquery.realType}, ${Absenquery.masukLong} ${Absenquery.realType}, ${Absenquery.masukAddress} ${Absenquery.textType}, ${Absenquery.masukDateTime} ${Absenquery.textType}, ${Absenquery.pulangLat} ${Absenquery.realType}, ${Absenquery.pulangLong} ${Absenquery.realType}, ${Absenquery.pulangAddress} ${Absenquery.textType}, ${Absenquery.pulangDateTime} ${Absenquery.textType})',
   ];
 
   Future<Database> openNewDatabase() async {
@@ -23,7 +26,7 @@ class Dbhelper {
             await db.execute(query);
           } catch (e) {
             // Log the error for debugging purposes
-            print('Error Membuat table: $e');
+            showToast('Error Membuat table: $e', success: false);
           }
         }
       },
@@ -43,7 +46,7 @@ class Dbhelper {
       return 'User berhasil ditambahkan';
     } catch (e) {
       // Log the error for debugging purposes
-      print('Error memasukkan user: $e');
+      showToast('Error memasukkan user: $e', success: false);
       return 'Error memasukkan user: $e';
     }
   }
@@ -71,19 +74,20 @@ class Dbhelper {
         return "Login Gagal";
       }
     } catch (e) {
-      // print('Error saat login: $e');
+      showToast('Error saat login: $e', success: false);
       return "Error saat login: $e";
     }
   }
 
-  Future<UserModel> getUser({required String id}) async {
+  Future<UserModel> getUser() async {
     final db = await openNewDatabase();
+    var idUser = await PreferenceHandler.getId();
     try {
       // Query the database for a user with the given email and password
       final List<Map<String, dynamic>> result = await db.query(
         UserQuery.tableName,
         where: '${UserQuery.id} = ? ',
-        whereArgs: [id],
+        whereArgs: [idUser],
       );
 
       Map<String, dynamic> userData = result.first;
@@ -100,28 +104,110 @@ class Dbhelper {
     }
   }
 
-  Future<String> insertAbsen({required Map<String, dynamic> data}) async {
+  Future<String> insertAbsenMasuk({required Map<String, dynamic> data}) async {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
     final db = await openNewDatabase();
 
     try {
       // Check if the data already exists
       final List<Map<String, dynamic>> existingData = await db.query(
         Absenquery.tableName,
-        where: '${Absenquery.masukDate} = ? AND ${Absenquery.userid} = ?',
-        whereArgs: [data[Absenquery.masukDate], data[Absenquery.userid]],
+        where:
+            '${Absenquery.userid} = ? AND ${Absenquery.masukDateTime} LIKE ?',
+        whereArgs: [
+          data[Absenquery.userid],
+          '%${dateFormat.format(DateTime.parse(data[Absenquery.masukDateTime])).toString()} %',
+        ],
       );
 
       if (existingData.isNotEmpty) {
         return 'Anda Sudah Absen Hari Ini';
-      }
+      } else {
+        await db.insert(Absenquery.tableName, data);
 
-      // Insert the new data
-      await db.insert(Absenquery.tableName, data);
-      return 'Absen berhasil ditambahkan';
+        return 'Absen Masuk berhasil ditambahkan';
+      }
+    } catch (e) {
+      showToast('Error memasukkan absen: $e', success: false);
+      return 'Error memasukkan absen: $e';
+    }
+  }
+
+  Future<String> insertAbsenPulang({
+    required Map<String, dynamic> data,
+    required int userId,
+  }) async {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    final db = await openNewDatabase();
+
+    try {
+      final List<Map<String, dynamic>> existingData = await db.query(
+        Absenquery.tableName,
+        where:
+            '${Absenquery.userid} = ? AND ${Absenquery.masukDateTime} LIKE ?',
+        whereArgs: [
+          userId,
+          '%${dateFormat.format(DateTime.parse(data[Absenquery.pulangDateTime])).toString()} %',
+        ],
+      );
+
+      if (existingData.isEmpty) {
+        return 'Anda Blm Absen Hari Ini';
+      } else if (existingData.first[Absenquery.pulangDateTime] != null) {
+        return 'Anda Sudah Absen Pulang Hari Ini';
+      } else {
+        await db.update(
+          Absenquery.tableName,
+          data,
+          where: '${Absenquery.id} = ?',
+          whereArgs: [existingData.first[Absenquery.id]],
+        );
+        return 'Absen Pulang berhasil';
+      }
+    } catch (e) {
+      showToast('Error memasukkan absen: $e', success: false);
+      return 'Error memasukkan absen: $e';
+    }
+  }
+
+  Future<List<AbsenModel>> getRiwayat() async {
+    final db = await openNewDatabase();
+    var idUser = await PreferenceHandler.getId();
+    try {
+      final List<Map<String, dynamic>> result = await db.query(
+        Absenquery.tableName,
+        where: '${Absenquery.userid} = ?',
+        whereArgs: [idUser],
+      );
+      return result.map((data) => AbsenModel.fromJson(data)).toList();
+    } catch (e) {
+      showToast('Error saat login: $e', success: false);
+      return [];
+    }
+  }
+
+  Future<bool> updateUserProfile({required Map<String, dynamic> data}) async {
+    final db = await openNewDatabase();
+    var idUser = await PreferenceHandler.getId();
+
+    try {
+      // Update the user's profile in the database
+      int count = await db.update(
+        UserQuery.tableName,
+        data,
+        where: '${UserQuery.id} = ?',
+        whereArgs: [idUser],
+      );
+
+      if (count > 0) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       // Log the error for debugging purposes
-      print('Error memasukkan absen: $e');
-      return 'Error memasukkan absen: $e';
+      print('Error memperbarui profil: $e');
+      return false;
     }
   }
 }

@@ -16,6 +16,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   DateFormat dateFormat = DateFormat("EEEE, dd MMMM yyyy");
+  var idUser = "";
   @override
   void initState() {
     super.initState();
@@ -23,7 +24,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void loadData() async {
-    var idUser = await PreferenceHandler.getId();
+    idUser = await PreferenceHandler.getId();
     // ignore: use_build_context_synchronously
     context.read<DashboardBloc>().add(DashboardInitialData(id: idUser));
   }
@@ -50,6 +51,8 @@ class _DashboardState extends State<Dashboard> {
         builder: (context, state) {
           if (state is DashboardLoading) {
             return const Center(child: CircularProgressIndicator());
+          } else if (state is DashboardFailed) {
+            return Center(child: Text("Failed Load Data"));
           } else if (state is DashboardLoaded) {
             return Column(
               children: [
@@ -92,36 +95,18 @@ class _DashboardState extends State<Dashboard> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () async {
-                            // Create an instance of Dbhelper
                             Dbhelper dbHelper = Dbhelper();
 
-                            // Prepare the data for absen
                             Map<String, dynamic> absenData = {
-                              'userid':
-                                  state
-                                      .user
-                                      .id, // Assuming `state.user.id` contains the user ID
-                              'masukDate': DateFormat(
-                                'yyyy-MM-dd',
-                              ).format(DateTime.now()),
-                              'masukLat':
-                                  state
-                                      .currentLat, // Assuming `state.currentLat` contains latitude
-                              'masukLong':
-                                  state
-                                      .currentLong, // Assuming `state.currentLong` contains longitude
-                              'masukAddress':
-                                  state
-                                      .currentAddress, // Assuming `state.currentAddress` contains the address
-                              'masukDateTime': DateTime.now(),
+                              'userId': idUser,
+                              'masukDateTime': DateTime.now().toString(),
+                              'masukLat': state.currentLat,
+                              'masukLong': state.currentLong,
+                              'masukAddress': state.currentAddress,
                             };
-
-                            // Call the insertAbsen method
-                            String result = await dbHelper.insertAbsen(
+                            String result = await dbHelper.insertAbsenMasuk(
                               data: absenData,
                             );
-
-                            // Show a toast or dialog with the result
                             ScaffoldMessenger.of(
                               context,
                             ).showSnackBar(SnackBar(content: Text(result)));
@@ -132,7 +117,31 @@ class _DashboardState extends State<Dashboard> {
                       SizedBox(width: 20),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            // Create an instance of Dbhelper
+                            Dbhelper dbHelper = Dbhelper();
+                            // // Prepare the data for absen
+                            Map<String, dynamic> absenData = {
+                              'pulangDateTime': DateTime.now().toString(),
+                              'pulangLat':
+                                  state
+                                      .currentLat, // Assuming `state.currentLat` contains latitude
+                              'pulangLong':
+                                  state
+                                      .currentLong, // Assuming `state.currentLong` contains longitude
+                              'pulangAddress':
+                                  state
+                                      .currentAddress, // Assuming `state.currentAddress` contains the address
+                            };
+                            // print(absenData);
+                            String result = await dbHelper.insertAbsenPulang(
+                              data: absenData,
+                              userId: int.parse(idUser),
+                            );
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text(result)));
+                          },
                           child: Text('Absen Pulang'),
                         ),
                       ),

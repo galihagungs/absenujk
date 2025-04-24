@@ -1,4 +1,6 @@
 import 'package:absenpraujk/page/home/dashboard.dart';
+import 'package:absenpraujk/page/home/profile.dart';
+import 'package:absenpraujk/page/home/riwayat.dart';
 import 'package:absenpraujk/page/loginpage.dart';
 import 'package:absenpraujk/service/pref_handler.dart';
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
@@ -15,11 +17,7 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
 
-  List<Widget> tabItems = [
-    Dashboard(),
-    Center(child: Text("1")),
-    Center(child: Text("2")),
-  ];
+  List<Widget> tabItems = [Dashboard(), RiwayatPage(), ProfilePage()];
 
   @override
   void initState() {

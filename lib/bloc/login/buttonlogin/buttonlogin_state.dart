@@ -13,8 +13,8 @@ final class ButtonloginSuccess extends ButtonloginState {
   ButtonloginSuccess(this.message);
 }
 
-final class ButtonloginError extends ButtonloginState {
-  final String error;
+final class ButtonloginFailed extends ButtonloginState {
+  final String message;
 
-  ButtonloginError(this.error);
+  ButtonloginFailed(this.message);
 }
