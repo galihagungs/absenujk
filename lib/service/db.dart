@@ -179,9 +179,32 @@ class Dbhelper {
         where: '${Absenquery.userid} = ?',
         whereArgs: [idUser],
       );
+      // print(result);
       return result.map((data) => AbsenModel.fromJson(data)).toList();
     } catch (e) {
       showToast('Error saat login: $e', success: false);
+      return [];
+    }
+  }
+
+  Future<List<AbsenModel>> getRiwayatbyFilter({
+    required DateTime filterDate,
+  }) async {
+    final db = await openNewDatabase();
+    var idUser = await PreferenceHandler.getId();
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    try {
+      final List<Map<String, dynamic>> result = await db.query(
+        Absenquery.tableName,
+        where:
+            '${Absenquery.userid} = ? AND ${Absenquery.masukDateTime} LIKE ?',
+        whereArgs: [idUser, '%${dateFormat.format(filterDate).toString()} %'],
+      );
+      print(result);
+      return result.map((data) => AbsenModel.fromJson(data)).toList();
+    } catch (e) {
+      print('Error saat Menerapkan filter: $e');
+      showToast('Error saat Menerapkan filter: $e', success: false);
       return [];
     }
   }

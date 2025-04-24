@@ -2,6 +2,7 @@ import 'package:absenpraujk/bloc/riwayat/riwayatpage/riwayatpage_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class RiwayatPage extends StatefulWidget {
   const RiwayatPage({super.key});
@@ -13,6 +14,7 @@ class RiwayatPage extends StatefulWidget {
 class _RiwayatPageState extends State<RiwayatPage> {
   DateFormat dateFormat = DateFormat("EEEE, dd MMMM yyyy");
   DateFormat timeFormat = DateFormat("HH:mm");
+  DateRangePickerController dateController = DateRangePickerController();
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,80 @@ class _RiwayatPageState extends State<RiwayatPage> {
       appBar: AppBar(
         title: const Text('Riwayat Absen'),
         actions: [
-          IconButton(icon: const Icon(Icons.filter_list), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.transparent,
+                    insetPadding: EdgeInsets.all(20),
+                    child: Container(
+                      width: double.infinity,
+                      height: 700,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                      ),
+                      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Filter Hari",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: SfDateRangePicker(
+                              // onSelectionChanged: _onSelectionChanged,
+                              backgroundColor: Colors.white,
+                              headerStyle: DateRangePickerHeaderStyle(
+                                backgroundColor: Colors.white,
+                              ),
+                              selectionMode:
+                                  DateRangePickerSelectionMode.single,
+                              controller: dateController,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<RiwayatpageBloc>().add(
+                                    RiwayatFilter(
+                                      filter:
+                                          dateController.selectedDate ??
+                                          DateTime.now(),
+                                    ),
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Terapkan"),
+                              ),
+                              SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Tutup"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
       body: Padding(
@@ -59,27 +134,51 @@ class _RiwayatPageState extends State<RiwayatPage> {
                                   ),
                                 ),
                                 SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    Text(
-                                      timeFormat.format(
-                                        DateTime.parse(
-                                          state.listAbsen[index].masukDateTime
-                                              .toString(),
+                                state.listAbsen[index].pulangDateTime == null
+                                    ? Row(
+                                      children: [
+                                        Text(
+                                          timeFormat.format(
+                                            DateTime.parse(
+                                              state
+                                                  .listAbsen[index]
+                                                  .masukDateTime
+                                                  .toString(),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    Text(" - "),
-                                    Text(
-                                      timeFormat.format(
-                                        DateTime.parse(
-                                          state.listAbsen[index].pulangDateTime
-                                              .toString(),
+                                        Text(" - "),
+                                        Text(
+                                          "Belum Pulang",
+                                          style: TextStyle(color: Colors.red),
                                         ),
-                                      ),
+                                      ],
+                                    )
+                                    : Row(
+                                      children: [
+                                        Text(
+                                          timeFormat.format(
+                                            DateTime.parse(
+                                              state
+                                                  .listAbsen[index]
+                                                  .masukDateTime
+                                                  .toString(),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(" - "),
+                                        Text(
+                                          timeFormat.format(
+                                            DateTime.parse(
+                                              state
+                                                  .listAbsen[index]
+                                                  .pulangDateTime
+                                                  .toString(),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
                               ],
                             ),
                             subtitle: Text(

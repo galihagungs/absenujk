@@ -14,6 +14,12 @@ class RiwayatpageBloc extends Bloc<RiwayatpageEvent, RiwayatpageState> {
         emit(RiwayatpageLoading());
         List<AbsenModel> listAbsen = await dbhelper.getRiwayat();
         emit(RiwayatpageLoaded(listAbsen: listAbsen));
+      } else if (event is RiwayatFilter) {
+        emit(RiwayatpageLoading());
+        List<AbsenModel> listAbsen = await dbhelper.getRiwayatbyFilter(
+          filterDate: event.filter,
+        );
+        emit(RiwayatpageLoaded(listAbsen: listAbsen));
       }
     });
   }
