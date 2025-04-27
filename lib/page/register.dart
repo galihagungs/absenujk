@@ -14,37 +14,39 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SafeArea(
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  const Text('Register'),
-                ],
-              ),
+            const SizedBox(height: 40),
+            const Text(
+              'Tolong isi data diri Anda',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             Form(
               key: _formKey,
               child: Column(
                 children: [
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person_2_outlined),
+                      hintText: 'Nama',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -56,9 +58,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email_outlined),
+                      hintText: 'Enter your email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -74,11 +79,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
+                    obscureText: !passwordVisible,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      hintText: 'Enter your password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Tolong masukkan password Anda';
@@ -107,27 +127,55 @@ class _RegisterPageState extends State<RegisterPage> {
                       if (state is ButtonregisterLoading) {
                         return const CircularProgressIndicator();
                       }
-                      return ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // Handle successful form submission
-                            context.read<ButtonregisterBloc>().add(
-                              ButtonregisterHit(
-                                email: _emailController.text,
-                                name: _nameController.text,
-                                password: _passwordController.text,
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              // Handle successful form submission
+                              context.read<ButtonregisterBloc>().add(
+                                ButtonregisterHit(
+                                  email: _emailController.text,
+                                  name: _nameController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Resgister',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
-                        child: const Text('Register'),
                       );
+                      // return ElevatedButton(
+                      //   onPressed: () {
+                      //     if (_formKey.currentState!.validate()) {
+                      //       // Handle successful form submission
+                      //       context.read<ButtonregisterBloc>().add(
+                      //         ButtonregisterHit(
+                      //           email: _emailController.text,
+                      //           name: _nameController.text,
+                      //           password: _passwordController.text,
+                      //         ),
+                      //       );
+                      //     }
+                      //   },
+                      //   style: ElevatedButton.styleFrom(
+                      //     minimumSize: const Size(double.infinity, 50),
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(15),
+                      //     ),
+                      //   ),
+                      //   child: const Text('Register'),
+                      // );
                     },
                   ),
                 ],
@@ -135,12 +183,6 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
 
             const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.pop(context);
-            //   },
-            //   child: const Text('Back to Home'),
-            // ),
           ],
         ),
       ),

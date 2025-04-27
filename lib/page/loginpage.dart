@@ -16,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool passwordVisible = false;
 
   @override
   void initState() {
@@ -37,19 +38,41 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login Page')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SafeArea(child: Container()),
+              Align(
+                alignment: Alignment.center,
+                child: Image.asset('assets/images/logo.png', height: 200),
+              ),
+
+              SizedBox(height: 30),
+              const Text(
+                'Log in ✨',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Welcome back! Please enter your details.',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 32),
+              const Text('Email'),
+              const SizedBox(height: 8),
+
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email_outlined),
+                  hintText: 'Enter your email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -62,14 +85,29 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              const Text('Password'),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _passwordController,
+                obscureText: !passwordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  hintText: 'Enter your password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      passwordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        passwordVisible = !passwordVisible;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Tolong masukan password anda';
@@ -116,17 +154,30 @@ class _LoginPageState extends State<LoginPage> {
                   if (state is ButtonloginLoading) {
                     return Center(child: CircularProgressIndicator());
                   }
-                  return ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final email = _emailController.text;
-                        final password = _passwordController.text;
-                        context.read<ButtonloginBloc>().add(
-                          ButtonloginHit(email: email, password: password),
-                        );
-                      }
-                    },
-                    child: Text('Login'),
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          final email = _emailController.text;
+                          final password = _passwordController.text;
+                          context.read<ButtonloginBloc>().add(
+                            ButtonloginHit(email: email, password: password),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Log In',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
                   );
                 },
               ),

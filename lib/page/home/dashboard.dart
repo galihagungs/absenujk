@@ -32,21 +32,10 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              PreferenceHandler.removeId();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(title: Container(), actions: [
+
+      //   ],
+      // ),
       body: BlocBuilder<DashboardBloc, DashboardState>(
         builder: (context, state) {
           if (state is DashboardLoading) {
@@ -56,96 +45,255 @@ class _DashboardState extends State<Dashboard> {
           } else if (state is DashboardLoaded) {
             return Column(
               children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Selamat datang di aplikasi absen \n ${state.user.name}',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                  ),
+                  height: MediaQuery.of(context).size.height * 0.22,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Image.asset(
+                                    'assets/images/logo.png',
+                                    height: 70,
+                                  ),
+                                ),
+                                Text(
+                                  "AbsenKu",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.logout,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                PreferenceHandler.removeId();
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Hallo, ${state.user.name}",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Selamat datang di aplikasi AbsenKu',
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  dateFormat.format(DateTime.now()),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-                ),
-                SizedBox(height: 20),
-                DigitalClock(
-                  showSeconds: true,
-                  datetime: DateTime.now(),
-                  digitalClockTextColor: Colors.black,
-                  textScaleFactor: 1.3,
-                  isLive: true,
-                ),
-                SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    "Sedang Berada : \n ${state.currentAddress}",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(height: 50),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            Dbhelper dbHelper = Dbhelper();
+                SizedBox(height: 30),
 
-                            Map<String, dynamic> absenData = {
-                              'userId': idUser,
-                              'masukDateTime': DateTime.now().toString(),
-                              'masukLat': state.currentLat,
-                              'masukLong': state.currentLong,
-                              'masukAddress': state.currentAddress,
-                            };
-                            String result = await dbHelper.insertAbsenMasuk(
-                              data: absenData,
-                            );
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(result)));
-                          },
-                          child: Text('Absen Masuk'),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
                         ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Absen Hari Ini',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            dateFormat.format(DateTime.now()),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Jam',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: DigitalClock(
+                                showSeconds: true,
+                                datetime: DateTime.now(),
+                                digitalClockTextColor: Colors.white,
+                                textScaleFactor: 1.3,
+                                isLive: true,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Lokasi',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            state.currentAddress,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    Dbhelper dbHelper = Dbhelper();
+
+                                    Map<String, dynamic> absenData = {
+                                      'userId': idUser,
+                                      'masukDateTime':
+                                          DateTime.now().toString(),
+                                      'masukLat': state.currentLat,
+                                      'masukLong': state.currentLong,
+                                      'masukAddress': state.currentAddress,
+                                    };
+                                    String result = await dbHelper
+                                        .insertAbsenMasuk(data: absenData);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(result)),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Absen Masuk',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    Dbhelper dbHelper = Dbhelper();
+
+                                    Map<String, dynamic> absenData = {
+                                      'pulangDateTime':
+                                          DateTime.now().toString(),
+                                      'pulangLat': state.currentLat,
+                                      'pulangLong': state.currentLong,
+                                      'pulangAddress': state.currentAddress,
+                                    };
+                                    // print(absenData);
+                                    String result = await dbHelper
+                                        .insertAbsenPulang(
+                                          data: absenData,
+                                          userId: int.parse(idUser),
+                                        );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(result)),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.output, color: Colors.white),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Absen Pulang',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            // Create an instance of Dbhelper
-                            Dbhelper dbHelper = Dbhelper();
-                            // // Prepare the data for absen
-                            Map<String, dynamic> absenData = {
-                              'pulangDateTime': DateTime.now().toString(),
-                              'pulangLat':
-                                  state
-                                      .currentLat, // Assuming `state.currentLat` contains latitude
-                              'pulangLong':
-                                  state
-                                      .currentLong, // Assuming `state.currentLong` contains longitude
-                              'pulangAddress':
-                                  state
-                                      .currentAddress, // Assuming `state.currentAddress` contains the address
-                            };
-                            // print(absenData);
-                            String result = await dbHelper.insertAbsenPulang(
-                              data: absenData,
-                              userId: int.parse(idUser),
-                            );
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(result)));
-                          },
-                          child: Text('Absen Pulang'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],

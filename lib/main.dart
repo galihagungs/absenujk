@@ -29,14 +29,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'AbsenPraujiKom',
         theme: ThemeData(
-          useMaterial3: true,
-          colorSchemeSeed: const Color.fromRGBO(86, 80, 14, 171),
+          // colorSchemeSeed: const Color.fromRGBO(86, 80, 14, 171),
         ),
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorSchemeSeed: const Color.fromRGBO(86, 80, 14, 171),
-        ),
+
         // themeMode: ThemeMode.dark,
         home: LoginPage(),
       ),
