@@ -4,6 +4,7 @@ import 'package:absenpraujk/service/db.dart';
 import 'package:absenpraujk/service/pref_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:one_clock/one_clock.dart';
 
@@ -32,10 +33,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Container(), actions: [
-
-      //   ],
-      // ),
+      // backgroundColor: Colors.black,
       body: BlocBuilder<DashboardBloc, DashboardState>(
         builder: (context, state) {
           if (state is DashboardLoading) {
@@ -117,17 +115,88 @@ class _DashboardState extends State<Dashboard> {
                             style: TextStyle(fontSize: 15, color: Colors.white),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 5),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DigitalClock(
+                      showSeconds: true,
+                      datetime: DateTime.now(),
+                      digitalClockTextColor: Colors.white,
+                      textScaleFactor: 1.3,
+                      isLive: true,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  margin: EdgeInsets.symmetric(horizontal: 25),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                      bottomLeft: Radius.circular(30),
+                    ),
+                    child: GoogleMap(
+                      circles: <Circle>{
+                        Circle(
+                          circleId: const CircleId("circle"),
+                          center: LatLng(state.currentLat, state.currentLong),
+                          radius: 1,
+                          fillColor: Colors.blue.withOpacity(0.5),
+                          strokeWidth: 2,
+                          strokeColor: Colors.blue,
+                        ),
+                      },
+                      compassEnabled: true,
+                      myLocationEnabled: true,
+                      mapType: MapType.normal,
+                      zoomControlsEnabled: false,
+                      zoomGesturesEnabled: true,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(state.currentLat, state.currentLong),
+                        zoom: 18.4746,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
 
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * 0.35,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -141,6 +210,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ],
                     ),
+
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
@@ -161,32 +231,7 @@ class _DashboardState extends State<Dashboard> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Jam',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: DigitalClock(
-                                showSeconds: true,
-                                datetime: DateTime.now(),
-                                digitalClockTextColor: Colors.white,
-                                textScaleFactor: 1.3,
-                                isLive: true,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 5),
+                          SizedBox(height: 10),
                           Text(
                             'Lokasi',
                             style: TextStyle(

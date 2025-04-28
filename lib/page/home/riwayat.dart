@@ -1,4 +1,5 @@
 import 'package:absenpraujk/bloc/riwayat/riwayatpage/riwayatpage_bloc.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -120,72 +121,191 @@ class _RiwayatPageState extends State<RiwayatPage> {
                     child: ListView.builder(
                       itemCount: state.listAbsen.length,
                       itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  dateFormat.format(
-                                    DateTime.parse(
-                                      state.listAbsen[index].masukDateTime
-                                          .toString(),
+                        return ExpandableNotifier(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                children: <Widget>[
+                                  ScrollOnExpand(
+                                    scrollOnExpand: true,
+                                    scrollOnCollapse: false,
+                                    child: ExpandablePanel(
+                                      theme: const ExpandableThemeData(
+                                        headerAlignment:
+                                            ExpandablePanelHeaderAlignment
+                                                .center,
+                                        tapBodyToCollapse: true,
+                                      ),
+                                      header: Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: Text(
+                                          dateFormat.format(
+                                            DateTime.parse(
+                                              state
+                                                  .listAbsen[index]
+                                                  .masukDateTime
+                                                  .toString(),
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      collapsed: Container(),
+                                      expanded: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          SizedBox(height: 5),
+                                          state
+                                                      .listAbsen[index]
+                                                      .pulangDateTime ==
+                                                  null
+                                              ? Row(
+                                                children: [
+                                                  Text(
+                                                    timeFormat.format(
+                                                      DateTime.parse(
+                                                        state
+                                                            .listAbsen[index]
+                                                            .masukDateTime
+                                                            .toString(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Text(" - "),
+                                                  Text(
+                                                    "Belum Pulang",
+                                                    style: TextStyle(
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                              : Row(
+                                                children: [
+                                                  Text(
+                                                    timeFormat.format(
+                                                      DateTime.parse(
+                                                        state
+                                                            .listAbsen[index]
+                                                            .masukDateTime
+                                                            .toString(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Text(" - "),
+                                                  Text(
+                                                    timeFormat.format(
+                                                      DateTime.parse(
+                                                        state
+                                                            .listAbsen[index]
+                                                            .pulangDateTime
+                                                            .toString(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            state.listAbsen[index].masukAddress
+                                                .toString(),
+                                          ),
+                                        ],
+                                      ),
+                                      builder: (_, collapsed, expanded) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                            left: 10,
+                                            right: 10,
+                                            bottom: 10,
+                                          ),
+                                          child: Expandable(
+                                            collapsed: collapsed,
+                                            expanded: expanded,
+                                            theme: const ExpandableThemeData(
+                                              crossFadePoint: 0,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 5),
-                                state.listAbsen[index].pulangDateTime == null
-                                    ? Row(
-                                      children: [
-                                        Text(
-                                          timeFormat.format(
-                                            DateTime.parse(
-                                              state
-                                                  .listAbsen[index]
-                                                  .masukDateTime
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(" - "),
-                                        Text(
-                                          "Belum Pulang",
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    )
-                                    : Row(
-                                      children: [
-                                        Text(
-                                          timeFormat.format(
-                                            DateTime.parse(
-                                              state
-                                                  .listAbsen[index]
-                                                  .masukDateTime
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(" - "),
-                                        Text(
-                                          timeFormat.format(
-                                            DateTime.parse(
-                                              state
-                                                  .listAbsen[index]
-                                                  .pulangDateTime
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              state.listAbsen[index].masukAddress.toString(),
+                                ],
+                              ),
                             ),
                           ),
                         );
+                        // return Card(
+                        //   child: ListTile(
+                        //     title: Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        // Text(
+                        //   dateFormat.format(
+                        //     DateTime.parse(
+                        //       state.listAbsen[index].masukDateTime
+                        //           .toString(),
+                        //     ),
+                        //   ),
+                        // ),
+                        //         SizedBox(height: 5),
+                        //         state.listAbsen[index].pulangDateTime == null
+                        //             ? Row(
+                        //               children: [
+                        //                 Text(
+                        //                   timeFormat.format(
+                        //                     DateTime.parse(
+                        //                       state
+                        //                           .listAbsen[index]
+                        //                           .masukDateTime
+                        //                           .toString(),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 Text(" - "),
+                        //                 Text(
+                        //                   "Belum Pulang",
+                        //                   style: TextStyle(color: Colors.red),
+                        //                 ),
+                        //               ],
+                        //             )
+                        //             : Row(
+                        //               children: [
+                        //                 Text(
+                        //                   timeFormat.format(
+                        //                     DateTime.parse(
+                        //                       state
+                        //                           .listAbsen[index]
+                        //                           .masukDateTime
+                        //                           .toString(),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 Text(" - "),
+                        //                 Text(
+                        //                   timeFormat.format(
+                        //                     DateTime.parse(
+                        //                       state
+                        //                           .listAbsen[index]
+                        //                           .pulangDateTime
+                        //                           .toString(),
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //       ],
+                        //     ),
+                        //     subtitle: Text(
+                        //       state.listAbsen[index].masukAddress.toString(),
+                        //     ),
+                        //   ),
+                        // );
                       },
                     ),
                   );
