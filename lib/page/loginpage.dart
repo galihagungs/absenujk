@@ -2,8 +2,10 @@ import 'package:absenpraujk/bloc/login/buttonlogin/buttonlogin_bloc.dart';
 import 'package:absenpraujk/page/home/homepage.dart';
 import 'package:absenpraujk/page/register.dart';
 import 'package:absenpraujk/service/pref_handler.dart';
+import 'package:absenpraujk/utils/wiget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -137,17 +139,23 @@ class _LoginPageState extends State<LoginPage> {
               BlocConsumer<ButtonloginBloc, ButtonloginState>(
                 listener: (context, state) {
                   if (state is ButtonloginSuccess) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.message)));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => Homepage()),
                     );
                   } else if (state is ButtonloginFailed) {
-                    ScaffoldMessenger.of(
+                    popAlertLogin(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(state.message)));
+                      lottieAddress: "assets/images/wrong.json",
+                      title: state.message,
+                      isAlert: true,
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -193,5 +201,56 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<dynamic> popAlertLogin(
+    BuildContext context, {
+    required String lottieAddress,
+    required String title,
+    required bool isAlert,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.all(20),
+          child: Container(
+            width: double.infinity * 0.5,
+            height: isAlert ? 390 : 320,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+            child: Column(
+              children: [
+                Lottie.asset(
+                  lottieAddress,
+                  width: 100,
+                  repeat: false,
+                  fit: BoxFit.fitWidth,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  title,
+                  // style: kanit20BoldMain,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 50),
+                uniButton(
+                  context,
+                  title: Text("OK", style: TextStyle(color: Colors.white)),
+                  func: () {
+                    Navigator.pop(context);
+                  },
+                  warna: Colors.blue,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

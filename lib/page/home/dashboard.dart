@@ -2,10 +2,12 @@ import 'package:absenpraujk/bloc/home/dashboard/dashbloc/dashboard_bloc.dart';
 import 'package:absenpraujk/page/loginpage.dart';
 import 'package:absenpraujk/service/db.dart';
 import 'package:absenpraujk/service/pref_handler.dart';
+import 'package:absenpraujk/utils/wiget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:one_clock/one_clock.dart';
 
 class Dashboard extends StatefulWidget {
@@ -266,9 +268,33 @@ class _DashboardState extends State<Dashboard> {
                                     };
                                     String result = await dbHelper
                                         .insertAbsenMasuk(data: absenData);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(result)),
-                                    );
+                                    if (result ==
+                                        "Absen Masuk berhasil ditambahkan") {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/check.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    } else if (result ==
+                                        "Anda Sudah Absen Hari Ini") {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/information.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    } else {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/wrong.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
@@ -311,9 +337,32 @@ class _DashboardState extends State<Dashboard> {
                                           data: absenData,
                                           userId: int.parse(idUser),
                                         );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(result)),
-                                    );
+                                    if (result == "Absen Pulang berhasil") {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/check.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    } else if (result ==
+                                        "Anda Sudah Absen Pulang Hari Ini") {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/information.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    } else {
+                                      popAlertDash(
+                                        context,
+                                        lottieAddress:
+                                            "assets/images/wrong.json",
+                                        title: result,
+                                        isAlert: false,
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
@@ -347,6 +396,57 @@ class _DashboardState extends State<Dashboard> {
           return Center(child: Text("Failed Load Data"));
         },
       ),
+    );
+  }
+
+  Future<dynamic> popAlertDash(
+    BuildContext context, {
+    required String lottieAddress,
+    required String title,
+    required bool isAlert,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.all(20),
+          child: Container(
+            width: double.infinity,
+            height: isAlert ? 390 : 320,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+            child: Column(
+              children: [
+                Lottie.asset(
+                  lottieAddress,
+                  width: 100,
+                  repeat: false,
+                  fit: BoxFit.fitWidth,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  title,
+                  // style: kanit20BoldMain,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 50),
+                uniButton(
+                  context,
+                  title: Text("OK", style: TextStyle(color: Colors.white)),
+                  func: () {
+                    Navigator.pop(context);
+                  },
+                  warna: Colors.blue,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

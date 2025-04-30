@@ -1,6 +1,8 @@
 import 'package:absenpraujk/bloc/register/buttonregister/buttonregister_bloc.dart';
+import 'package:absenpraujk/utils/wiget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -116,14 +118,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   BlocConsumer<ButtonregisterBloc, ButtonregisterState>(
                     listener: (context, state) {
                       if (state is ButtonregisterSuccess) {
-                        ScaffoldMessenger.of(
+                        popAlertRegist(
                           context,
-                        ).showSnackBar(SnackBar(content: Text(state.message)));
-                        Navigator.pop(context);
+                          lottieAddress: "assets/images/check.json",
+                          title: state.message,
+                          isAlert: false,
+                        );
+                        // Navigator.pop(context);
                       } else if (state is ButtonregisterError) {
-                        ScaffoldMessenger.of(
+                        popAlertRegist(
                           context,
-                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                          lottieAddress: "assets/images/wrong.json",
+                          title: state.message,
+                          isAlert: false,
+                        );
                       }
                     },
                     builder: (context, state) {
@@ -158,27 +166,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       );
-                      // return ElevatedButton(
-                      //   onPressed: () {
-                      //     if (_formKey.currentState!.validate()) {
-                      //       // Handle successful form submission
-                      //       context.read<ButtonregisterBloc>().add(
-                      //         ButtonregisterHit(
-                      //           email: _emailController.text,
-                      //           name: _nameController.text,
-                      //           password: _passwordController.text,
-                      //         ),
-                      //       );
-                      //     }
-                      //   },
-                      //   style: ElevatedButton.styleFrom(
-                      //     minimumSize: const Size(double.infinity, 50),
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(15),
-                      //     ),
-                      //   ),
-                      //   child: const Text('Register'),
-                      // );
                     },
                   ),
                 ],
@@ -198,5 +185,57 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<dynamic> popAlertRegist(
+    BuildContext context, {
+    required String lottieAddress,
+    required String title,
+    required bool isAlert,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.all(20),
+          child: Container(
+            width: double.infinity,
+            height: isAlert ? 390 : 320,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+            child: Column(
+              children: [
+                Lottie.asset(
+                  lottieAddress,
+                  width: 100,
+                  repeat: false,
+                  fit: BoxFit.fitWidth,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  title,
+                  // style: kanit20BoldMain,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 50),
+                uniButton(
+                  context,
+                  title: Text("OK", style: TextStyle(color: Colors.white)),
+                  func: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  warna: Colors.blue,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -28,11 +28,10 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'AbsenPraujiKom',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           // colorSchemeSeed: const Color.fromRGBO(86, 80, 14, 171),
         ),
-
-        // themeMode: ThemeMode.dark,
         home: LoginPage(),
       ),
     );
